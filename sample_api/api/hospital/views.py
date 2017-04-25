@@ -15,7 +15,7 @@ def doctor(request):
         for d in doctor:
             response["doctors"].append({"name":d.name, "lastname": d.lastname, "age": d.age});
         return JsonResponse(response)
-        
+
     elif request.method == "POST":
         print("post doctor")
         try:
@@ -36,9 +36,7 @@ def doctor_single(request, doctor_id):
             doctor = doctor.first()
         return JsonResponse({"name":doctor.name, "lastname":doctor.lastname, "age":doctor.age})
 
-    elif request.method == "POST":
-        pass
-    
+
     elif request.method=="DELETE":
         doctor = Doctor.objects.filter(id=int(doctor_id))
         if doctor.exists():
@@ -88,7 +86,6 @@ def patient_single(request, patient_id):
 
 @csrf_exempt
 def department(request):
-    print(request)
     if request.method == "GET":
         department=Department.objects.all()
         dep = {}
@@ -100,6 +97,16 @@ def department(request):
         
         dep["departments"]=dep_records
         return JsonResponse(dep)
+
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            doctors = []
+            department = Department.objects.create(name=data["name"])
+            return JsonResponse({"status":"OK", "message":"Department has been added"})
+
+        except Exception as e:
+            return JsonResponse({"status":"FAIL", "message":"wrong data format"})
     
 @csrf_exempt
 def department_single(request, department_id):
